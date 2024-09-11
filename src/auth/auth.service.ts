@@ -11,23 +11,25 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findOneByUsername(username);
+  // Foydalanuvchini tekshirish
+  async validateUser(phone: string, password: string): Promise<any> {
+    const user = await this.usersService.findOneByPhone(phone); // username o'rniga phone ishlatyapsiz
     if (user && await bcrypt.compare(password, user.password)) {
       const { password, ...result } = user;
-      return result;
+      return result; // Parolni olib tashlab, qolgan ma'lumotlarni qaytaradi
     }
     return null;
   }
 
-  async login(username: string, password: string) {
-    const user = await this.validateUser(username, password);
+  // Login jarayoni
+  async login(phone: string, password: string) {
+    const user = await this.validateUser(phone, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const payload: JwtPayload = { 
-      username: user.username, 
+      phone: user.phone,  // JWT ichida phone bo'lsin
       role: user.role 
     };
     return {

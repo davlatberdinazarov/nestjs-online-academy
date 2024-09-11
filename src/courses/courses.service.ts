@@ -39,7 +39,7 @@ export class CoursesService {
   async update(id: number, updateCourseDto: UpdateCourseDto) {
     const course = await this.findOne(id);
     const { categoryId, ...courseData } = updateCourseDto;
-    
+
     if (categoryId) {
       const category = await this.categoriesRepository.findOne({ where: { id: categoryId } });
       if (!category) {
@@ -49,6 +49,12 @@ export class CoursesService {
     }
 
     Object.assign(course, courseData);
+    return await this.coursesRepository.save(course);
+  }
+
+  async sellCourse(id: number) {
+    const course = await this.findOne(id);
+    course.isSelled = true; // isSelled ni true qilib qo'yish
     return await this.coursesRepository.save(course);
   }
 

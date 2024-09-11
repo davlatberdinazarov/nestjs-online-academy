@@ -1,25 +1,26 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { JwtPayload } from './jwt-payload.interface';
-import { UsersService } from '../users/users.service'; // Adjust the path as needed
+import { JwtPayload } from './jwt-payload.interface'; // Import qilish
+import { UsersService } from '../users/users.service'; // Import qilish
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly usersService: UsersService, // Use UsersService if UserRepository is not directly used
+    private readonly usersService: UsersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: 'yourSecretKey', // Use the same secret key as in JwtModule
+      secretOrKey: 'mysecretkey', // JwtModule'da ishlatilgan secretKey bilan bir xil bo'lishi kerak
     });
   }
 
   async validate(payload: JwtPayload) {
-    const user = await this.usersService.findOneByUsername(payload.username);
+    // payload.username o'rniga payload.phone ishlatish
+    const user = await this.usersService.findOneByPhone(payload.phone);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('User not found');
     }
-    return user;
+    return user; // JWT token valid bo'lsa, foydalanuvchi ma'lumotlarini qaytaradi
   }
 }

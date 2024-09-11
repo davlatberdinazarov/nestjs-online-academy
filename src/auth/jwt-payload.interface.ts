@@ -1,4 +1,5 @@
+// jwt-payload.interface.ts
 export interface JwtPayload {
-  username: string;  // Foydalanuvchining username'i (yoki email, login identifikatori)
-  role: string;      // Foydalanuvchi roli (Admin, Mentor, Student)
+  phone: string;  // Foydalanuvchining phone raqami
+  role: string;   // Foydalanuvchining roli
 }

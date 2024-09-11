@@ -17,4 +17,10 @@ export class Course {
 
   @ManyToOne(() => Category, (category) => category.courses, { eager: true, onDelete: 'CASCADE' })
   category: Category;
+
+  @Column({ default: false }) // isSelled default qiymati false
+  isSelled: boolean;
+
+  @Column()
+  banner: string;
 }

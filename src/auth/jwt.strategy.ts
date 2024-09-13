@@ -17,9 +17,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: JwtPayload) {
     // payload.username o'rniga payload.phone ishlatish
-    const user = await this.usersService.findOneByPhone(payload.phone);
+    const user = await this.usersService.findOneByPhone(payload.phone); // Telefon orqali foydalanuvchini izlash
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('User not found'); // Foydalanuvchi topilmasa xato
     }
     return user; // JWT token valid bo'lsa, foydalanuvchi ma'lumotlarini qaytaradi
   }

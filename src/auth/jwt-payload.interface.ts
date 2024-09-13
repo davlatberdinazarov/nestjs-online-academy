@@ -1,5 +1,7 @@
 // jwt-payload.interface.ts
 export interface JwtPayload {
-  phone: string;  // Foydalanuvchining phone raqami
-  role: string;   // Foydalanuvchining roli
+  id: number;        // Foydalanuvchining IDsi
+  fullName: string;  // Foydalanuvchining to'liq ismi
+  phone: string;     // Foydalanuvchining telefon raqami
+  role: string;      // Foydalanuvchining roli
 }

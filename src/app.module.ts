@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -9,6 +9,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { CoursesModule } from './courses/courses.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_PIPE } from '@nestjs/core';
+import { LessonGroupsModule } from './lesson-group/lesson-group.module';
 
 @Module({
   imports: [
@@ -31,9 +33,16 @@ import { AuthModule } from './auth/auth.module';
     CategoriesModule,
     CoursesModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    LessonGroupsModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    }
+  ],
 })
 export class AppModule { }

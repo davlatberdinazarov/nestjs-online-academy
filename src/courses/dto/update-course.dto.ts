@@ -6,6 +6,6 @@ export class UpdateCourseDto extends PartialType(CreateCourseDto) {
     description?: string;
     price?: number;
     categoryId?: number;  // Optional for updating the category
-    isSelled?: boolean;
+    onActivated?: boolean;
     banner?: string;  // Optional for updating the banner image URL
 }

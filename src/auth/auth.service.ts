@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
-import { JwtPayload } from './jwt-payload.interface'; // Import qilish
 
 @Injectable()
 export class AuthService {
@@ -11,27 +10,30 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // Foydalanuvchini tekshirish
+  // Validate user credentials
   async validateUser(phone: string, password: string): Promise<any> {
-    const user = await this.usersService.findOneByPhone(phone); // username o'rniga phone ishlatyapsiz
+    const user = await this.usersService.findOneByPhone(phone); // Find user by phone
     if (user && await bcrypt.compare(password, user.password)) {
-      const { password, ...result } = user;
-      return result; // Parolni olib tashlab, qolgan ma'lumotlarni qaytaradi
+      const { password, ...result } = user; // Exclude the password
+      return result;
     }
     return null;
   }
 
-  // Login jarayoni
+  // Login and generate JWT token
   async login(phone: string, password: string) {
     const user = await this.validateUser(phone, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload: JwtPayload = { 
-      phone: user.phone,  // JWT ichida phone bo'lsin
-      role: user.role 
+    const payload = {
+      id: user.id,
+      fullName: user.fullName,
+      phone: user.phone,
+      role: user.role,
     };
+
     return {
       access_token: this.jwtService.sign(payload),
     };

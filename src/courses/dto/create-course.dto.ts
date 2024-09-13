@@ -1,18 +1,51 @@
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+
 export class CreateCourseDto {
-    name: string;
-    description: string;
-    price: number;
-    categoryId: number;  // This will link the course to a specific category
-    isSelled: boolean;  // This field will be used to track if the course is sold or not. Default value is false.
-    banner: string;
-  }
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: number;
+
+  @IsOptional()
+  @IsNumber()
+  categoryId?: number;
+
+  @IsOptional()
+  @IsString()
+  banner?: string;
+}
+
   
-  export class UpdateCourseDto {
-    name?: string;
-    description?: string;
-    price?: number;
-    categoryId?: number;  // Optional for updating the category
-    isSelled?: boolean;
-    banner?: string;  // Optional for updating the banner image URL
-  }
-  
+
+export class UpdateCourseDto {
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsNumber()
+  price?: number;
+
+  @IsOptional()
+  @IsNumber()
+  categoryId?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  onActivated?: boolean;
+
+  @IsOptional()
+  @IsString()
+  banner?: string;
+}

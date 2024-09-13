@@ -14,8 +14,8 @@ export class UsersService {
 
   // Foydalanuvchi yaratish (ro'yxatdan o'tkazish yoki mentor yaratish)
  // Foydalanuvchi yaratish
- async create(createUserDto: CreateUserDto, currentUserRole: UserRole) {
-  const { fullName, phone, password, role } = createUserDto;
+ async create(createUserDto: CreateUserDto) {
+  const { fullName, phone, password } = createUserDto;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // Telefon orqali foydalanuvchini tekshirish
@@ -24,32 +24,65 @@ export class UsersService {
     throw new BadRequestException('Phone number already exists');
   }
 
-  // Admin bo'lsa, rolni 'ADMIN' qilib belgilash
-  if (currentUserRole === UserRole.ADMIN) {
-    // Agar rolni `CreateUserDto` orqali olish
-    const finalRole = role || UserRole.STUDENT;
+  // Rolni har doim `STUDENT` qilib belgilash
+  const newUser = this.usersRepository.create({
+    fullName,
+    phone,
+    password: hashedPassword,
+    role: UserRole.STUDENT,  // Roli avtomatik tarzda `STUDENT` qilindi
+  });
 
-    const newUser = this.usersRepository.create({
-      fullName,
-      phone,
-      password: hashedPassword,
-      role: finalRole,
-    });
-    return await this.usersRepository.save(newUser);
+  return await this.usersRepository.save(newUser);
+}
+
+
+async createMentor(createUserDto: CreateUserDto, currentUserRole: UserRole) {
+  const { fullName, phone, password } = createUserDto;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Telefon raqami orqali foydalanuvchini tekshirish
+  const existingUser = await this.findOneByPhone(phone);
+  if (existingUser) {
+    throw new BadRequestException('Phone number already exists');
   }
 
-  // Agar oddiy foydalanuvchi bo'lsa, rolni o'zgartirish (default rol - 'STUDENT')
-  if (currentUserRole === UserRole.STUDENT) {
-    const newUser = this.usersRepository.create({
+  // Faqat admin foydalanuvchilar mentor yaratishi mumkin
+  if (currentUserRole === UserRole.ADMIN) {
+    const newMentor = this.usersRepository.create({
       fullName,
       phone,
       password: hashedPassword,
-      role: UserRole.STUDENT,
+      role: UserRole.MENTOR,  // Roli avtomatik tarzda 'MENTOR' o'rnatiladi
     });
-    return await this.usersRepository.save(newUser);
+    return await this.usersRepository.save(newMentor);
+  } else {
+    throw new ForbiddenException('Only admins can create mentor users');
   }
 }
 
+async createAdmin(createUserDto: CreateUserDto, currentUserRole: UserRole) {
+  const { fullName, phone, password } = createUserDto;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Telefon raqami orqali foydalanuvchini tekshirish
+  const existingUser = await this.findOneByPhone(phone);
+  if (existingUser) {
+    throw new BadRequestException('Phone number already exists');
+  }
+
+  // Admin roli orqali foydalanuvchini yaratish
+  if (currentUserRole === UserRole.ADMIN) {
+    const newAdmin = this.usersRepository.create({
+      fullName,
+      phone,
+      password: hashedPassword,
+      role: UserRole.ADMIN,  // Roli avtomatik tarzda 'ADMIN' o'rnatiladi
+    });
+    return await this.usersRepository.save(newAdmin);
+  } else {
+    throw new ForbiddenException('Only admins can create admin users');
+  }
+}
   // Telefon raqam orqali foydalanuvchini topish
   async findOneByPhone(phone: string) {
     return await this.usersRepository.findOne({ where: { phone } });
@@ -89,16 +122,15 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-  
-    // Adminlarning faqat `MENTOR` va boshqa `ADMIN` foydalanuvchilarni o'chirishga ruxsati bor
-    if (currentUserRole === UserRole.STUDENT) {
-      throw new ForbiddenException('Students cannot delete other users');
+
+    if (currentUserRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only admins can delete users');
     }
   
     // Admin foydalanuvchi boshqa admin yoki mentorni o'chirishi mumkin
-    if (currentUserRole === UserRole.ADMIN && user.role === UserRole.STUDENT) {
-      throw new ForbiddenException('Cannot delete student users');
-    }
+    // if (currentUserRole === UserRole.ADMIN && user.role === UserRole.STUDENT) {
+    //   throw new ForbiddenException('Cannot delete student users');
+    // }
   
     await this.usersRepository.delete(id);
     return { deleted: true };

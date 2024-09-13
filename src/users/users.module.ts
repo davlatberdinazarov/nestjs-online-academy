@@ -8,6 +8,6 @@ import { User } from './entities/user.entity';
   imports: [TypeOrmModule.forFeature([User])],
   providers: [UsersService],
   controllers: [UsersController],
-  exports: [UsersService], // Bu qatorni qo'shing, shunda UsersService boshqa modullar uchun mavjud bo'ladi
+  exports: [UsersService , TypeOrmModule], // Bu qatorni qo'shing, shunda UsersService boshqa modullar uchun mavjud bo'ladi
 })
 export class UsersModule {}

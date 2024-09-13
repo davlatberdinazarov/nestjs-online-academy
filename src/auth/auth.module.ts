@@ -8,16 +8,15 @@ import { UsersModule } from '../users/users.module'; // UsersModule ni import qi
 
 @Module({
   imports: [
-    UsersModule,               // Bu qatorni qo'shing
+    UsersModule, // Import qilingan
     PassportModule,
     JwtModule.register({
       secret: 'mysecretkey',
       signOptions: { expiresIn: '60m' },
     }),
-    UsersModule
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService, JwtModule]
+  exports: [AuthService, JwtModule], // JwtModule eksport qilinadi
 })
 export class AuthModule {}

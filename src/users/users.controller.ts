@@ -12,36 +12,47 @@ export class UsersController {
   // Foydalanuvchini yaratish
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto, UserRole.STUDENT); // Default rol
+    // Foydalanuvchini yaratishda avtomatik ravishda roli `STUDENT` bo'ladi
+    return this.usersService.create(createUserDto);
   }
+  
 
   // Mentor yaratish (faqat adminlar)
   @Post('create-mentor')
   @UseGuards(AuthGuard('jwt'))
-  async createMentor(@Body() createUserDto: CreateUserDto, @Req() req: RequestWithUser) {
+  async createMentor(
+    @Body() createUserDto: CreateUserDto,
+    @Req() req: RequestWithUser,
+  ) {
     const currentUser = req.user;
-
+  
+    // Faqat adminlar mentor yaratishi mumkin
     if (currentUser.role !== UserRole.ADMIN) {
       throw new ForbiddenException('Only admins can create mentor users');
     }
-
-    // Adminlar uchun role ni kiritish shart emas, default rolni `MENTOR` qilib o'rnatish
-    return this.usersService.create(createUserDto, UserRole.ADMIN);
+  
+    // `createUserDto` orqali keladigan rolga e'tibor bermaymiz, roli avtomatik tarzda MENTOR qilinadi
+    return this.usersService.createMentor(createUserDto, UserRole.ADMIN);
   }
-
-  // Admin yaratish (faqat adminlar)
+  // Mentor yaratish (faqat adminlar)
   @Post('create-admin')
   @UseGuards(AuthGuard('jwt'))
-  async createAdmin(@Body() createUserDto: CreateUserDto, @Req() req: RequestWithUser) {
+  async createAdmin(
+    @Body() createUserDto: CreateUserDto,
+    @Req() req: RequestWithUser,
+  ) {
     const currentUser = req.user;
-
+  
+    // Faqat adminlar mentor yaratishi mumkin
     if (currentUser.role !== UserRole.ADMIN) {
-      throw new ForbiddenException('Only admins can create other admin users');
+      throw new ForbiddenException('Only admins can create mentor users');
     }
-
-    // Adminlar uchun role ni kiritish shart emas, default rolni `ADMIN` qilib o'rnatish
-    return this.usersService.create(createUserDto, UserRole.ADMIN);
+  
+    // `createUserDto` orqali keladigan rolga e'tibor bermaymiz, roli avtomatik tarzda MENTOR qilinadi
+    return this.usersService.createAdmin(createUserDto, UserRole.ADMIN);
   }
+  
+
   // Barcha foydalanuvchilarni olish
   @Get()
   @UseGuards(AuthGuard('jwt'))

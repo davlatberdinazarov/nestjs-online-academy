@@ -1,5 +1,5 @@
 import { Course } from 'src/courses/entities/course.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -30,4 +30,7 @@ export class User {
 
   @OneToMany(() => Course, (course) => course.creator)
   courses: Course[];  // Foydalanuvchi yaratgan kurslar bilan bog'lanish
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

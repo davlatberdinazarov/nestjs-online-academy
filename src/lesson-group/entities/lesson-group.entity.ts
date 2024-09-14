@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
 import { Course } from 'src/courses/entities/course.entity';
 import { Lesson } from 'src/lessons/entities/lesson.entity';
 
@@ -15,4 +15,7 @@ export class LessonGroup {
 
   @OneToMany(() => Lesson, (lesson) => lesson.lessonGroup)
   lessons: Lesson[];
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

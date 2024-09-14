@@ -15,6 +15,4 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @IsEnum(UserRole)
-  role?: UserRole; // Optional: foydalanuvchi rolini berish mumkin
 }

@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_PIPE } from '@nestjs/core';
 import { LessonGroupsModule } from './lesson-group/lesson-group.module';
 import { LessonsModule } from './lessons/lessons.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import { LessonsModule } from './lessons/lessons.module';
     UsersModule,
     AuthModule,
     LessonGroupsModule,
-    LessonsModule
+    LessonsModule,
+    ProfileModule
   ],
   controllers: [AppController],
   providers: [

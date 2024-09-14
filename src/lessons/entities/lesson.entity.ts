@@ -1,5 +1,5 @@
 import { LessonGroup } from "src/lesson-group/entities/lesson-group.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Lesson {
@@ -17,4 +17,7 @@ export class Lesson {
 
     @ManyToOne(() => LessonGroup, (lessonGroup) => lessonGroup.lessons, { onDelete: 'CASCADE' })
     lessonGroup: LessonGroup;
+    
+    @CreateDateColumn()
+    createdAt: Date;
 }

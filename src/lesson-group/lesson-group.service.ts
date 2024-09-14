@@ -100,6 +100,7 @@ export class LessonGroupsService {
     }
   
     await this.lessonGroupsRepository.remove(lessonGroup);
+    
   }
   
 }

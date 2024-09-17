@@ -56,6 +56,18 @@ export class CoursesService {
     return await this.coursesRepository.find({ relations: ['category', 'creator'] });
   }
 
+  async findActiveCourses() {
+    return await this.coursesRepository.find({ where: { onActivated: true }, relations: ['category', 'creator'] });
+  }
+
+  // find all active courses by id
+  async findActiveCoursesById(id: number) {
+    const course = await this.coursesRepository.findOne({ where: { id, onActivated: true }, relations: ['category', 'creator'] });
+    if (!course) {
+      throw new NotFoundException(`Course with id ${id} not found`);
+    }
+    return course;
+  }
   // Kursni yangilash
   async update(id: number, updateCourseDto: UpdateCourseDto, currentUser: User) {
     const course = await this.findOne(id);
@@ -81,6 +93,16 @@ export class CoursesService {
     } catch (error) {
       throw new InternalServerErrorException('Failed to update course');
     }
+  }
+
+  // O'zining kurslarini yoki Admin bo'lsa barcha kurslarni olish
+   // Foydalanuvchining o'ziga tegishli kurslarni olish
+   async findCoursesByUser(user: User): Promise<Course[]> {
+    // Foydalanuvchi faqat o'zi yaratgan kurslarni ko'radi
+    return this.coursesRepository.find({
+      where: { creator: { id: user.id } },
+      relations: ['category', 'creator'],
+    });
   }
 
   // Kursni o'chirish

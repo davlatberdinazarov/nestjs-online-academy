@@ -28,6 +28,9 @@ export class User {
   })
   role: UserRole;
 
+  @Column({ nullable: true })
+  image: string; // Profil rasmi uchun maydon
+
   @OneToMany(() => Course, (course) => course.creator)
   courses: Course[];  // Foydalanuvchi yaratgan kurslar bilan bog'lanish
 

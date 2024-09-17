@@ -11,7 +11,7 @@ import { UsersModule } from '../users/users.module'; // UsersModule ni import qi
     UsersModule, // Import qilingan
     PassportModule,
     JwtModule.register({
-      secret: 'mysecretkey',
+      secret: "mysecretkey",
       signOptions: { expiresIn: '60m' },
     }),
   ],

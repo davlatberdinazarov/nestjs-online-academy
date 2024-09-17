@@ -83,6 +83,7 @@ export class UsersService {
       throw new ForbiddenException('Only admins can create admin users');
     }
   }
+
   // Telefon raqam orqali foydalanuvchini topish
   async findOneByPhone(phone: string) {
     return await this.usersRepository.findOne({ where: { phone } });

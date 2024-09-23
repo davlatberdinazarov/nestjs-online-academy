@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './entities/user.entity';
@@ -13,7 +13,6 @@ export class UsersService {
   ) { }
 
   // Foydalanuvchi yaratish (ro'yxatdan o'tkazish yoki mentor yaratish)
-  // Foydalanuvchi yaratish
   async create(createUserDto: CreateUserDto) {
     const { fullName, phone, password } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -23,7 +22,6 @@ export class UsersService {
     if (existingUser) {
       throw new BadRequestException('Phone number already exists');
     }
-
     // Rolni har doim `STUDENT` qilib belgilash
     const newUser = this.usersRepository.create({
       fullName,
@@ -85,9 +83,10 @@ export class UsersService {
   }
 
   // Telefon raqam orqali foydalanuvchini topish
-  async findOneByPhone(phone: string) {
-    return await this.usersRepository.findOne({ where: { phone } });
+  async findOneByPhone(phone: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { phone } });
   }
+  
 
   // Barcha foydalanuvchilarni olish
   async findAll() {
@@ -107,8 +106,30 @@ export class UsersService {
     Object.assign(user, updateUserDto);
     return await this.usersRepository.save(user);
   }
+
   
 
+  // Foydalanuvchining telefon raqami va parolini yangilash
+  async updatePhoneAndPassword(userId: number, phone: string, password: string): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    // Parolni hashing qilish
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.phone = phone;
+    user.password = hashedPassword;
+
+    try {
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to update user details');
+    }
+  }
+  
   async delete(id: number, currentUserRole: UserRole) {
     const user = await this.findOne(id);
 

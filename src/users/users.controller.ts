@@ -100,8 +100,18 @@ export class UsersController {
     const currentUser = req.user;
     return this.usersService.update(id, updateUserDto, currentUser.role);
   }
-  
 
+  @Patch('update-phone-password')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  async updatePhoneAndPassword(
+    @Req() req: RequestWithUser,
+    @Body('phone') phone: string,
+    @Body('password') password: string,
+  ) {
+    const currentUser = req.user;
+    return this.usersService.updatePhoneAndPassword(currentUser.id, phone, password);
+  }
+  
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)

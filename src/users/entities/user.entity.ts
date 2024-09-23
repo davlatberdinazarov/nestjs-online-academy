@@ -1,5 +1,6 @@
 import { Course } from 'src/courses/entities/course.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
+import { PurchasedCourse } from 'src/purchased-courses/entities/purchased-course.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, CreateDateColumn } from 'typeorm';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -29,10 +30,13 @@ export class User {
   role: UserRole;
 
   @Column({ nullable: true })
-  image: string; // Profil rasmi uchun maydon
+  image: string;
 
   @OneToMany(() => Course, (course) => course.creator)
-  courses: Course[];  // Foydalanuvchi yaratgan kurslar bilan bog'lanish
+  courses: Course[]; // Foydalanuvchi yaratgan kurslar
+
+  @OneToMany(() => PurchasedCourse, (purchasedCourse) => purchasedCourse.student)
+  purchasedCourses: PurchasedCourse[];
 
   @CreateDateColumn()
   createdAt: Date;

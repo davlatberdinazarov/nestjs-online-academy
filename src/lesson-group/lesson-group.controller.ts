@@ -8,7 +8,7 @@ import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('lesson-groups')
 export class LessonGroupsController {
-  constructor(private readonly lessonGroupsService: LessonGroupsService) {}
+  constructor(private readonly lessonGroupsService: LessonGroupsService) { }
 
   @Post('create/:courseId')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -22,15 +22,36 @@ export class LessonGroupsController {
     return this.lessonGroupsService.create(createLessonGroupDto, userId, courseId);
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  async findAll() {
-    return this.lessonGroupsService.findAll();
+  @Get('course_id/:courseId')
+  async findAllByCourseId(
+    @Param('courseId') courseId: number,
+    @Request() req: any // request object orqali query params olamiz
+  ) {
+    const includeLessons = req.query.include_lessons === 'true'; // query paramsni tekshiramiz
+    return this.lessonGroupsService.findAllByCourseId(courseId, includeLessons);
   }
 
+  @Get('mine-all/course_id/:courseId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT)
+  async findAllByCourseIdForStudent(
+    @Param('courseId') courseId: number,
+    @Request() req: any // request object orqali query params olamiz
+  ) {
+    const includeLessons = req.query.include_lessons === 'true'; // query paramsni tekshiramiz
+    return this.lessonGroupsService.findAllByCourseId(courseId, includeLessons);
+  }
+
+
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: number) {
+    return this.lessonGroupsService.findOne(id);
+  }
+
+  @Get('my/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT)
+  async findOneForStudent(@Param('id') id: number) {
     return this.lessonGroupsService.findOne(id);
   }
 

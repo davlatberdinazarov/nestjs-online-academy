@@ -49,3 +49,8 @@ export class UpdateCourseDto {
   @IsString()
   banner?: string;
 }
+
+export class AssignStudentToCourseDto {
+  courseId: number;
+  phone: string;
+}

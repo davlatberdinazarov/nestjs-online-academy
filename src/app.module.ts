@@ -13,6 +13,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { LessonGroupsModule } from './lesson-group/lesson-group.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { ProfileModule } from './profile/profile.module';
+import { PurchasedCoursesModule } from './purchased-courses/purchased-courses.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { ProfileModule } from './profile/profile.module';
     AuthModule,
     LessonGroupsModule,
     LessonsModule,
-    ProfileModule
+    ProfileModule,
+    PurchasedCoursesModule
   ],
   controllers: [AppController],
   providers: [

@@ -1,15 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ForbiddenException, ParseIntPipe } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CreateCourseDto, UpdateCourseDto } from './dto/create-course.dto';
+import { AssignStudentToCourseDto, CreateCourseDto, UpdateCourseDto } from './dto/create-course.dto';
 import { JwtAuthGuard } from 'src/users/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from 'src/users/entities/user.entity';
+import { User, UserRole } from 'src/users/entities/user.entity';
 import { RequestWithUser } from 'src/users/interfaces/request-with-user.interface';
+import { Course } from './entities/course.entity';
 
 @Controller('courses')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(private readonly coursesService: CoursesService) { }
 
   @Post('create-course')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -18,6 +19,7 @@ export class CoursesController {
     const currentUser = req.user;
     return this.coursesService.create(createCourseDto, currentUser);
   }
+
 
   @Get('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -40,6 +42,7 @@ export class CoursesController {
 
   @Get('my')
   @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.MENTOR)
   async findMyCourses(@Req() req: RequestWithUser) {
     const currentUser = req.user;
     return this.coursesService.findCoursesByUser(currentUser);

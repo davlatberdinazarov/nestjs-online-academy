@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, CreateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
 import { User } from 'src/users/entities/user.entity';
 import { LessonGroup } from 'src/lesson-group/entities/lesson-group.entity';
+import { PurchasedCourse } from 'src/purchased-courses/entities/purchased-course.entity';
 
 @Entity()
 export class Course {
@@ -37,4 +38,7 @@ export class Course {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => PurchasedCourse, (purchasedCourse) => purchasedCourse.course)
+  students: PurchasedCourse[];
 }

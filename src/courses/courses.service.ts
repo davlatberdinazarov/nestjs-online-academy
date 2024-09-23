@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from './entities/course.entity';
-import { CreateCourseDto, UpdateCourseDto } from './dto/create-course.dto';
+import { AssignStudentToCourseDto, CreateCourseDto, UpdateCourseDto } from './dto/create-course.dto';
 import { Category } from 'src/categories/entities/category.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
 
@@ -20,29 +20,29 @@ export class CoursesService {
   // Kurs yaratish
   async create(createCourseDto: CreateCourseDto, user: User): Promise<Course> {
     const { categoryId, ...courseData } = createCourseDto;
-  
+
     // Kategoriya mavjudligini tekshirish
     const category = await this.categoriesRepository.findOne({ where: { id: categoryId } });
     if (!category) {
       throw new NotFoundException(`Category with id ${categoryId} not found`);
     }
-  
+
     // Kurs nomining unikalligini tekshirish
     const isNameUnique = await this.coursesRepository.findOne({ where: { name: courseData.name } });
     if (isNameUnique) {
       throw new BadRequestException('Course name must be unique');
     }
-  
+
     // user obyektini tekshirish
     console.log('User object:', user);
-  
+
     // Kurs yaratish
     const course = this.coursesRepository.create({
       ...courseData,
       category,
       creator: user, // creator sifatida foydalanuvchini qo'shamiz
     });
-  
+
     try {
       return await this.coursesRepository.save(course);
     } catch (error) {
@@ -50,7 +50,7 @@ export class CoursesService {
       throw new InternalServerErrorException('Failed to create course');
     }
   }
-  
+
   // Kurslarni olish
   async findAll() {
     return await this.coursesRepository.find({ relations: ['category', 'creator'] });
@@ -60,6 +60,7 @@ export class CoursesService {
     return await this.coursesRepository.find({ where: { onActivated: true }, relations: ['category', 'creator'] });
   }
 
+
   // find all active courses by id
   async findActiveCoursesById(id: number) {
     const course = await this.coursesRepository.findOne({ where: { id, onActivated: true }, relations: ['category', 'creator'] });
@@ -68,6 +69,24 @@ export class CoursesService {
     }
     return course;
   }
+
+
+  // STUDENT UCHUN
+  async getCoursesByStudent(user: User): Promise<Course[]> {
+    // Agar foydalanuvchi `STUDENT` bo'lmasa, ruxsat bermaslik
+    if (user.role !== UserRole.STUDENT) {
+      throw new ForbiddenException('Faqat studentlar o\'z kurslarini ko\'ra oladi');
+    }
+
+    // Foydalanuvchi qatnashayotgan kurslarni olish
+    const courses = await this.coursesRepository.find({
+      where: { students: { id: user.id } }, // Student bo'lgan kurslarni topish
+      relations: ['category', 'creator'],   // Kursga tegishli ma'lumotlarni yuklash
+    });
+
+    return courses;
+  }
+
   // Kursni yangilash
   async update(id: number, updateCourseDto: UpdateCourseDto, currentUser: User) {
     const course = await this.findOne(id);
@@ -95,9 +114,12 @@ export class CoursesService {
     }
   }
 
-  // O'zining kurslarini yoki Admin bo'lsa barcha kurslarni olish
-   // Foydalanuvchining o'ziga tegishli kurslarni olish
-   async findCoursesByUser(user: User): Promise<Course[]> {
+  async findCoursesByUser(user: User): Promise<Course[]> {
+    // Agar foydalanuvchi roli 'STUDENT' bo'lsa, xatolik qaytarish
+    if (user.role === UserRole.STUDENT) {
+      throw new ForbiddenException('Student foydalanuvchilar kurslarni ko\'ra olmaydi');
+    }
+
     // Foydalanuvchi faqat o'zi yaratgan kurslarni ko'radi
     return this.coursesRepository.find({
       where: { creator: { id: user.id } },
@@ -123,7 +145,8 @@ export class CoursesService {
     return await this.coursesRepository.save(course);
   }
 
-  // Kursni ID bo'yicha olish
+
+  // Kursni ID bo'yicha olish 
   async findOne(id: number) {
     const course = await this.coursesRepository.findOne({ where: { id }, relations: ['category', 'creator'] });
     if (!course) {

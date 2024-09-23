@@ -12,7 +12,7 @@ import { UsersModule } from '../users/users.module'; // UsersModule ni import qi
     PassportModule,
     JwtModule.register({
       secret: "mysecretkey",
-      signOptions: { expiresIn: '60m' },
+      signOptions: { expiresIn: '3d' },
     }),
   ],
   providers: [AuthService, JwtStrategy],

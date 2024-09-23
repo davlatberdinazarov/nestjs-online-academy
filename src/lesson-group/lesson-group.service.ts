@@ -44,10 +44,19 @@ export class LessonGroupsService {
     return await this.lessonGroupsRepository.save(lessonGroup);
   }
   
-
-  async findAll() {
-    return await this.lessonGroupsRepository.find({ relations: ['course'] });
+  async findAllByCourseId(courseId: number, includeLessons: boolean): Promise<LessonGroup[]> {
+    const course = await this.coursesRepository.findOne({
+      where: { id: courseId },
+      relations: includeLessons ? ['lessonGroups', 'lessonGroups.lessons'] : ['lessonGroups'], // `lessons`ni faqat queryda bo'lsa olib kelamiz
+    });
+  
+    if (!course) {
+      throw new NotFoundException(`Course with id ${courseId} not found`);
+    }
+  
+    return course.lessonGroups;
   }
+  
 
   async findOne(id: number) {
     const lessonGroup = await this.lessonGroupsRepository.findOne({ where: { id }, relations: ['course'] });

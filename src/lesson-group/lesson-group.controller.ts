@@ -31,18 +31,6 @@ export class LessonGroupsController {
     return this.lessonGroupsService.findAllByCourseId(courseId, includeLessons);
   }
 
-  @Get('mine-all/course_id/:courseId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.STUDENT)
-  async findAllByCourseIdForStudent(
-    @Param('courseId') courseId: number,
-    @Request() req: any // request object orqali query params olamiz
-  ) {
-    const includeLessons = req.query.include_lessons === 'true'; // query paramsni tekshiramiz
-    return this.lessonGroupsService.findAllByCourseId(courseId, includeLessons);
-  }
-
-
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.lessonGroupsService.findOne(id);

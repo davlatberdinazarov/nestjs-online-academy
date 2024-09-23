@@ -26,7 +26,6 @@ export class CoursesService {
     if (!category) {
       throw new NotFoundException(`Category with id ${categoryId} not found`);
     }
-
     // Kurs nomining unikalligini tekshirish
     const isNameUnique = await this.coursesRepository.findOne({ where: { name: courseData.name } });
     if (isNameUnique) {
@@ -129,12 +128,26 @@ export class CoursesService {
 
   // Kursni o'chirish
   async remove(id: number, currentUser: User) {
-    const course = await this.findOne(id);
-
+    const course = await this.coursesRepository.findOne({
+      where: { id },
+      relations: ['lessonGroups'],
+    });
+  
+    if (!course) {
+      throw new NotFoundException(`Course with id ${id} not found`);
+    }
+  
+    // Agar kurs faollashtirilgan bo'lsa, yoki sotilgan bo'lsa
+    if (course.onActivated || course.soldCount > 0) {
+      throw new ForbiddenException('You cannot delete a course that is active or has been sold.');
+    }
+  
+    // Agar mentor kursni boshqalar tomonidan yaratilgan bo'lsa
     if (currentUser.role === UserRole.MENTOR && course.creator.id !== currentUser.id) {
       throw new ForbiddenException('You can only delete your own courses');
     }
-
+  
+    // Kursni o'chirish
     return await this.coursesRepository.remove(course);
   }
 

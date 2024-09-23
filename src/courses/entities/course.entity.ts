@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, CreateDateColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
 import { User } from 'src/users/entities/user.entity';
 import { LessonGroup } from 'src/lesson-group/entities/lesson-group.entity';
@@ -41,4 +41,7 @@ export class Course {
 
   @OneToMany(() => PurchasedCourse, (purchasedCourse) => purchasedCourse.course)
   students: PurchasedCourse[];
+
+  @Column({ default: 0 }) // Yangi maydon
+  soldCount: number; // Sotilgan kurslar soni
 }

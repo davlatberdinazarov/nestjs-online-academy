@@ -56,7 +56,6 @@ export class LessonGroupsService {
   
     return course.lessonGroups;
   }
-  
 
   async findOne(id: number) {
     const lessonGroup = await this.lessonGroupsRepository.findOne({ where: { id }, relations: ['course'] });
@@ -65,6 +64,7 @@ export class LessonGroupsService {
     }
     return lessonGroup;
   }
+
 
   async update(id: number, updateLessonGroupDto: CreateLessonGroupDto, userId: number): Promise<LessonGroup> {
     const { name } = updateLessonGroupDto;

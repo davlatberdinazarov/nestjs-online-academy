@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Request, NotFoundException } from '@nestjs/common';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
@@ -23,14 +23,17 @@ export class LessonsController {
     return this.lessonsService.create(createLessonDto, userId, lessonGroupId);
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  async findAll() {
-    return await this.lessonsService.findAll();
+
+  @Get('group/:lessonGroupId')
+  async findAllByLessonGroupId(@Param('lessonGroupId') lessonGroupId: string) {
+    const id = parseInt(lessonGroupId, 10); // lessonGroupId ni number ga aylantirish
+    if (isNaN(id)) {
+      throw new NotFoundException(`Invalid lesson group ID: ${lessonGroupId}`);
+    }
+    return await this.lessonsService.findAllByLessonGroupId(id);
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: number) {
     return await this.lessonsService.findOne(+id);
   }

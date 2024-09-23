@@ -42,10 +42,16 @@ export class PurchasedCoursesController {
   @Get('course/:courseId/lesson-groups')
   @UseGuards(JwtAuthGuard)
   @Roles(UserRole.STUDENT)
-  async getLessonGroupsByCourse(@Param('courseId') courseId: number, @Req() req: RequestWithUser) {
+  async getLessonGroupsByCourse(
+    @Param('courseId') courseId: number, 
+    @Req() req: RequestWithUser
+  ) {
     const student = req.user;
-    return this.purchasedCoursesService.getLessonGroupsByStudent(courseId, student.id);
+    const includeLessons = req.query.include_lessons === 'true'; // Querydan olingan parametr
+  
+    return this.purchasedCoursesService.getLessonGroupsByStudent(courseId, student.id, includeLessons);
   }
+  
 
 
   @Get('course/:id/students')

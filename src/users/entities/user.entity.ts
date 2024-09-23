@@ -1,6 +1,6 @@
 import { Course } from 'src/courses/entities/course.entity';
 import { PurchasedCourse } from 'src/purchased-courses/entities/purchased-course.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
 
 export enum UserRole {
   ADMIN = 'admin',

@@ -44,8 +44,14 @@ export class LessonsService {
     return await this.lessonRepository.save(lesson);
   }
 
-  async findAll() {
-    return await this.lessonRepository.find({ relations: ['lessonGroup'] });
+
+  async findAllByLessonGroupId(groupId: number): Promise<Lesson[]> {
+    const lessonGroup = await this.lessonGroupRepository.findOne({ where: { id: groupId },
+    relations: ['lessons']});
+    if (!lessonGroup) {
+      throw new NotFoundException(`LessonGroup with id ${groupId} not found`);
+    }
+    return lessonGroup.lessons;
   }
 
   async findOne(id: number) {
@@ -57,8 +63,11 @@ export class LessonsService {
     if (!lesson) {
       throw new NotFoundException(`Lesson with id ${id} not found`);
     }
+
+    console.log(lesson); // Log orqali `creator` ni tekshirish
     return lesson;
-  }
+}
+
 
   async update(id: number, updateLessonDto: UpdateLessonDto, userId: number): Promise<Lesson> {
     const { name, description, videoUrl } = updateLessonDto;

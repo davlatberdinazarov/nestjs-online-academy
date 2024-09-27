@@ -19,7 +19,7 @@ export class LessonsService {
   ) { }
 
   async create(createLessonDto: CreateLessonDto, userId: number, LessonGroupId: number): Promise<Lesson> {
-    const { name, description, videoUrl } = createLessonDto;
+    const { name, description, videoUrl, duration } = createLessonDto;
     const lessonGroup = await this.lessonGroupRepository.findOne({ 
       where: { id: LessonGroupId },
       relations: ['course', 'course.creator'] 
@@ -39,10 +39,10 @@ export class LessonsService {
       throw new ForbiddenException('You do not have permission to create lessons in this course');
     }
 
-    const lesson = this.lessonRepository.create({ name, description, videoUrl, lessonGroup });
+    const lesson = this.lessonRepository.create({ name, description, videoUrl, duration, lessonGroup });
 
     return await this.lessonRepository.save(lesson);
-  }
+}
 
 
   async findAllByLessonGroupId(groupId: number): Promise<Lesson[]> {
@@ -69,33 +69,34 @@ export class LessonsService {
 }
 
 
-  async update(id: number, updateLessonDto: UpdateLessonDto, userId: number): Promise<Lesson> {
-    const { name, description, videoUrl } = updateLessonDto;
-    const lesson = await this.lessonRepository.findOne({ 
-      where: { id },
-      relations: ['lessonGroup', 'lessonGroup.course', 'lessonGroup.course.creator'] 
-    });
+async update(id: number, updateLessonDto: UpdateLessonDto, userId: number): Promise<Lesson> {
+  const { name, description, videoUrl, duration } = updateLessonDto;
+  const lesson = await this.lessonRepository.findOne({ 
+    where: { id },
+    relations: ['lessonGroup', 'lessonGroup.course', 'lessonGroup.course.creator'] 
+  });
 
-    if (!lesson) {
-      throw new NotFoundException(`Lesson with id ${id} not found`);
-    }
-
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-
-    if (user.role === UserRole.MENTOR && lesson.lessonGroup.course.creator.id !== userId) {
-      throw new ForbiddenException('You do not have permission to update lessons in this course');
-    }
-
-    lesson.name = name;
-    lesson.description = description;
-    lesson.videoUrl = videoUrl;
-
-    return await this.lessonRepository.save(lesson);
+  if (!lesson) {
+    throw new NotFoundException(`Lesson with id ${id} not found`);
   }
+
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+
+  if (!user) {
+    throw new NotFoundException(`User with id ${userId} not found`);
+  }
+
+  if (user.role === UserRole.MENTOR && lesson.lessonGroup.course.creator.id !== userId) {
+    throw new ForbiddenException('You do not have permission to update lessons in this course');
+  }
+
+  lesson.name = name;
+  lesson.description = description;
+  lesson.videoUrl = videoUrl;
+  lesson.duration = duration;
+
+  return await this.lessonRepository.save(lesson);
+}
 
   async delete(id: number, userId: number): Promise<Lesson> {
     const lesson = await this.lessonRepository.findOne({ 

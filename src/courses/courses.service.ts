@@ -158,7 +158,6 @@ export class CoursesService {
     return await this.coursesRepository.save(course);
   }
 
-
   // Kursni ID bo'yicha olish 
   async findOne(id: number) {
     const course = await this.coursesRepository.findOne({ where: { id }, relations: ['category', 'creator'] });

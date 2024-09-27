@@ -19,17 +19,17 @@ export class CategoriesController {
     return this.categoriesService.create(createCategoryDto);
   }
 
-  @Get()
+  @Get('all')
   async findAll() {
     return this.categoriesService.findAll();
   }
 
-  @Get(':id')
+  @Get('find-one/:id')
   async findOne(@Param('id') id: number) {
     return this.categoriesService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch('update/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async update(@Param('id') id: number, @Body() updateCategoryDto: UpdateCategoryDto) {

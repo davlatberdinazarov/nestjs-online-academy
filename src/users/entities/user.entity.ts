@@ -1,5 +1,7 @@
 import { Course } from 'src/courses/entities/course.entity';
+import { LikedCourse } from 'src/liked-course/entities/liked-course.entity';
 import { PurchasedCourse } from 'src/purchased-courses/entities/purchased-course.entity';
+import { Rating } from 'src/rating/entities/rating.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
 
 export enum UserRole {
@@ -37,6 +39,12 @@ export class User {
 
   @OneToMany(() => PurchasedCourse, (purchasedCourse) => purchasedCourse.student)
   purchasedCourses: PurchasedCourse[];
+
+  @OneToMany(() => LikedCourse, (likedCourse) => likedCourse.user)
+  likedCourses: LikedCourse[];
+
+  @OneToMany(() => Rating, (rating) => rating.user)
+  ratings: Rating[];
 
   @CreateDateColumn()
   createdAt: Date;

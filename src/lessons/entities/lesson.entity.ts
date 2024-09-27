@@ -15,6 +15,9 @@ export class Lesson {
     @Column()
     videoUrl: string;
 
+    @Column()
+    duration: string;
+
     @ManyToOne(() => LessonGroup, (lessonGroup) => lessonGroup.lessons, { onDelete: 'CASCADE' })
     lessonGroup: LessonGroup;
     

@@ -3,6 +3,8 @@ import { Category } from 'src/categories/entities/category.entity';
 import { User } from 'src/users/entities/user.entity';
 import { LessonGroup } from 'src/lesson-group/entities/lesson-group.entity';
 import { PurchasedCourse } from 'src/purchased-courses/entities/purchased-course.entity';
+import { LikedCourse } from 'src/liked-course/entities/liked-course.entity';
+import { Rating } from 'src/rating/entities/rating.entity';
 
 @Entity()
 export class Course {
@@ -42,6 +44,20 @@ export class Course {
   @OneToMany(() => PurchasedCourse, (purchasedCourse) => purchasedCourse.course)
   students: PurchasedCourse[];
 
+  @OneToMany(() => LikedCourse, (likedCourse) => likedCourse.course)
+  likedCourses: LikedCourse[];
+
   @Column({ default: 0 }) // Yangi maydon
   soldCount: number; // Sotilgan kurslar soni
+
+  @OneToMany(() => Rating, (rating) => rating.course, { eager: true })
+  ratings: Rating[];
+
+  getAverageRating(): number {
+    if (!this.ratings || this.ratings.length === 0) {
+      return 0;
+    }
+    const total = this.ratings.reduce((sum, rating) => sum + rating.value, 0);
+    return total / this.ratings.length;
+  }
 }

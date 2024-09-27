@@ -14,6 +14,8 @@ import { LessonGroupsModule } from './lesson-group/lesson-group.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { ProfileModule } from './profile/profile.module';
 import { PurchasedCoursesModule } from './purchased-courses/purchased-courses.module';
+import { LikedCourseModule } from './liked-course/liked-course.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
@@ -40,7 +42,9 @@ import { PurchasedCoursesModule } from './purchased-courses/purchased-courses.mo
     LessonGroupsModule,
     LessonsModule,
     ProfileModule,
-    PurchasedCoursesModule
+    PurchasedCoursesModule,
+    LikedCourseModule,
+    RatingModule
   ],
   controllers: [AppController],
   providers: [

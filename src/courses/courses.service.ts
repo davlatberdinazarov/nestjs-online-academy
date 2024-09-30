@@ -5,6 +5,7 @@ import { Course } from './entities/course.entity';
 import { AssignStudentToCourseDto, CreateCourseDto, UpdateCourseDto } from './dto/create-course.dto';
 import { Category } from 'src/categories/entities/category.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
+import { Rating } from 'src/rating/entities/rating.entity';
 
 @Injectable()
 export class CoursesService {

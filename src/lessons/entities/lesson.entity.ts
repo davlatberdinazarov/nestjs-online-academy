@@ -20,8 +20,11 @@ export class Lesson {
 
     @ManyToOne(() => LessonGroup, (lessonGroup) => lessonGroup.lessons, { onDelete: 'CASCADE' })
     lessonGroup: LessonGroup;
-    
+
+    // Yangi 'viewed' maydonini qo'shish
+    @Column({ default: false })  // Standart qiymati false, ya'ni ko'rilmagan deb belgilanadi
+    viewed: boolean;
+
     @CreateDateColumn()
     createdAt: Date;
 }
-    

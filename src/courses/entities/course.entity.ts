@@ -52,12 +52,4 @@ export class Course {
 
   @OneToMany(() => Rating, (rating) => rating.course, { eager: true })
   ratings: Rating[];
-
-  getAverageRating(): number {
-    if (!this.ratings || this.ratings.length === 0) {
-      return 0;
-    }
-    const total = this.ratings.reduce((sum, rating) => sum + rating.value, 0);
-    return total / this.ratings.length;
-  }
 }

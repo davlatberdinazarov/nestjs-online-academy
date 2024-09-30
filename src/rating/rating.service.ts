@@ -18,6 +18,16 @@ export class RatingService {
     private userRepository: Repository<User>,
   ) { }
 
+  async calculateAverageRating(courseId: number): Promise<number> {
+    const courseRatings = await this.ratingRepository.find({ where: { course: { id: courseId } } });
+    if (courseRatings.length === 0) {
+      return 0;
+    }
+    const total = courseRatings.reduce((sum, rating) => sum + rating.value, 0);
+    return total / courseRatings.length;
+  }
+  
+
   async create(createRatingDto: CreateRatingDto, userId: number) {
     const { courseId, value, comment } = createRatingDto;
 
